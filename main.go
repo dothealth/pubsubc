@@ -66,8 +66,8 @@ func create(ctx context.Context, projectID string, topics Topics, endpoint strin
 			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{
 				Topic: topic,
 				PushConfig: pubsub.PushConfig{
-					Endpoint: endpoint
-				}
+					Endpoint: endpoint,
+				},
 			})
 			if err != nil {
 				return fmt.Errorf("Unable to create subscription %q on topic %q for project %q: %s", subscriptionID, topicID, projectID, err)
