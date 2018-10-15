@@ -45,7 +45,7 @@ func fatalf(format string, params ...interface{}) {
 
 // create a connection to the PubSub service and create topics and subscriptions
 // for the specified project ID.
-func create(ctx context.Context, projectID string, topics Topics) error {
+func create(ctx context.Context, projectID string, topics Topics, endpoint string) error {
 	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		return fmt.Errorf("Unable to create client to project %q: %s", projectID, err)
@@ -63,7 +63,12 @@ func create(ctx context.Context, projectID string, topics Topics) error {
 
 		for _, subscriptionID := range subscriptions {
 			debugf("    Creating subscription %q", subscriptionID)
-			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{Topic: topic})
+			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{
+				Topic: topic,
+				PushConfig: pubsub.PushConfig{
+					Endpoint: endpoint
+				}
+			})
 			if err != nil {
 				return fmt.Errorf("Unable to create subscription %q on topic %q for project %q: %s", subscriptionID, topicID, projectID, err)
 			}
@@ -95,6 +100,7 @@ func main() {
 		// Fetch the enviroment variable. If it doesn't exist, break out.
 		currentEnv := fmt.Sprintf("PUBSUB_PROJECT%d", i)
 		env := os.Getenv(currentEnv)
+		endpoint := os.Getenv("PUBSUB_ENDPOINT")
 		if env == "" {
 			// If this is the first environment variable, print the usage info.
 			if i == 1 {
@@ -119,7 +125,7 @@ func main() {
 		}
 
 		// Create the project and all its topics and subscriptions.
-		if err := create(context.Background(), parts[0], topics); err != nil {
+		if err := create(context.Background(), parts[0], topics, endpoint); err != nil {
 			fatalf(err.Error())
 		}
 	}
