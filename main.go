@@ -66,7 +66,7 @@ func create(ctx context.Context, projectID string, topics Topics, endpoint strin
 			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{
 				Topic: topic,
 				PushConfig: pubsub.PushConfig{
-					Endpoint: "localhost:5678/jobs/run",
+					Endpoint: "http://localhost:5678/jobs/run",
 				},
 			})
 			if err != nil {
