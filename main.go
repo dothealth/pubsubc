@@ -66,7 +66,7 @@ func create(ctx context.Context, projectID string, topics Topics, endpoint strin
 			_, err = client.CreateSubscription(ctx, subscriptionID, pubsub.SubscriptionConfig{
 				Topic: topic,
 				PushConfig: pubsub.PushConfig{
-					Endpoint: endpoint,
+					Endpoint: "localhost:5678/jobs/run",
 				},
 			})
 			if err != nil {
@@ -101,6 +101,7 @@ func main() {
 		currentEnv := fmt.Sprintf("PUBSUB_PROJECT%d", i)
 		env := os.Getenv(currentEnv)
 		endpoint := os.Getenv("PUBSUB_ENDPOINT")
+		debugf("    ENDPOINTIS %q", endpoint)
 		if env == "" {
 			// If this is the first environment variable, print the usage info.
 			if i == 1 {
